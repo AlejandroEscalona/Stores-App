@@ -50,4 +50,10 @@ class StoreAdapter(private var stores: MutableList<StoreEntity>, private var lis
         stores.add(storeEntity)
         notifyDataSetChanged()
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setStores(stores: MutableList<StoreEntity>) {
+        this.stores = stores
+        notifyDataSetChanged()
+    }
 }
