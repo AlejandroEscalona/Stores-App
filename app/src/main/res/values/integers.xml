@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="counter_max_length_name">50</integer>
+    <integer name="counter_max_length_phone">13</integer>
+    <integer name="liner_url_website">2</integer>
+    <integer name="liner_url_photo">4</integer>
+    <integer name="lines_max_photo">8</integer>
+</resources>

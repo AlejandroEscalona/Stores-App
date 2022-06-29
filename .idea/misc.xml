@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable/states_cb_favorite.xml" value="0.178" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2851851851851852" />
+        <entry key="app/src/main/res/layout/fragment_edit_store.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_store.xml" value="0.33" />
       </map>
     </option>
