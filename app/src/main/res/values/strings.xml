@@ -2,4 +2,6 @@
     <string name="app_name">Stores</string>
     <string name="description_img_photo">imagen de la tienda</string>
     <string name="store_add">Store add</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
