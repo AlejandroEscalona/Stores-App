@@ -9,4 +9,7 @@
     <string name="hint_phone">Phone</string>
     <string name="hint_website">Website url</string>
     <string name="hint_photo_url">Photo url</string>
+    <string name="edit_store_title_fragment">Create store</string>
+    <string name="menu_save">Save</string>
+    <string name="store_added_succes">Store added successfully</string>
 </resources>
