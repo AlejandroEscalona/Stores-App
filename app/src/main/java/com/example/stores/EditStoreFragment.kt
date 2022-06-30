@@ -1,10 +1,21 @@
 package com.example.stores
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.inputmethodservice.InputMethodService
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.stores.databinding.FragmentEditStoreBinding
 import com.google.android.material.snackbar.Snackbar
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class EditStoreFragment : Fragment() {
 
@@ -19,17 +30,45 @@ class EditStoreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val id = arguments?.getLong(getString(R.string.id), 0)
+
+        if (id != null && id != 0L){
+            Toast.makeText(activity,id.toString(),Toast.LENGTH_SHORT).show()
+        }else{
+            Toast.makeText(activity,"A",Toast.LENGTH_SHORT).show()
+
+        }
+
         mActivity = activity as? MainActivity
 
         mActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         mActivity?.supportActionBar?.title = getString(R.string.edit_store_title_fragment)
 
         setHasOptionsMenu(true)
+
+        mBinding.etPhotoUrl.addTextChangedListener {
+            Glide.with(this)
+                .load(mBinding.etPhotoUrl.text.toString())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .centerCrop()
+                .into(mBinding.imgPhoto)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_save, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private fun hideKeyboard(){
+        val imm = mActivity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
+    }
+
+    override fun onDestroyView() {
+        hideKeyboard()
+        super.onDestroyView()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -39,7 +78,25 @@ class EditStoreFragment : Fragment() {
                 true
             }
             R.id.action_save -> {
-                Snackbar.make(mBinding.root, getString(R.string.store_added_succes), Snackbar.LENGTH_SHORT).show()
+                val store = StoreEntity(
+                    name = mBinding.etName.text.toString().trim(),
+                    phone = mBinding.edPhone.text.toString().trim(),
+                    website = mBinding.etWebsite.text.toString().trim(),
+                    photoUrl = mBinding.etPhotoUrl.text.toString().trim())
+
+                doAsync {
+                    store.id = StoreApplication.database.storeDao().addStore(store)
+                    uiThread {
+                        mActivity?.addStore(store)
+
+                        hideKeyboard()
+
+                        Toast.makeText(mActivity, R.string.edit_store_title_fragment,
+                            Toast.LENGTH_SHORT).show()
+
+                        mActivity?.onBackPressed()
+                    }
+                }
                 true
             }
             else -> {

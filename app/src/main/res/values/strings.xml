@@ -12,4 +12,5 @@
     <string name="edit_store_title_fragment">Create store</string>
     <string name="menu_save">Save</string>
     <string name="store_added_succes">Store added successfully</string>
+    <string name="id">key_id</string>
 </resources>
