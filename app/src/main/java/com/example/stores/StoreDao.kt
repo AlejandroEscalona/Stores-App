@@ -8,6 +8,9 @@ interface StoreDao {
     @Query("SELECT * FROM StoreEntity")
     fun getAllStores() : MutableList<StoreEntity>
 
+    @Query("SELECT * FROM StoreEntity WHERE id = :id")
+    fun getStore(id: Long): StoreEntity
+
     @Insert
     fun addStore(storeEntity: StoreEntity) : Long
 
@@ -16,4 +19,6 @@ interface StoreDao {
 
     @Delete
     fun deleteStore(storeEntity: StoreEntity)
+
+
 }

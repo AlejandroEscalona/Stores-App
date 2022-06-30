@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.inputmethodservice.InputMethodService
 import android.os.Bundle
+import android.text.Editable
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -21,6 +22,8 @@ class EditStoreFragment : Fragment() {
 
     private lateinit var mBinding: FragmentEditStoreBinding
     private var mActivity: MainActivity? = null
+    private var mIsEditMode : Boolean = false
+    private var mStoreEntity : StoreEntity? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
@@ -34,7 +37,8 @@ class EditStoreFragment : Fragment() {
         val id = arguments?.getLong(getString(R.string.id), 0)
 
         if (id != null && id != 0L){
-            Toast.makeText(activity,id.toString(),Toast.LENGTH_SHORT).show()
+            mIsEditMode = true
+            getStore(id)
         }else{
             Toast.makeText(activity,"A",Toast.LENGTH_SHORT).show()
 
@@ -53,6 +57,15 @@ class EditStoreFragment : Fragment() {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .into(mBinding.imgPhoto)
+        }
+    }
+
+    private fun getStore(id: Long) {
+        doAsync {
+            mStoreEntity = StoreApplication.database.storeDao().getStore(id)
+            uiThread {
+                if (mStoreEntity != null) setUiStore(mStoreEntity!!)
+            }
         }
     }
 
@@ -80,7 +93,7 @@ class EditStoreFragment : Fragment() {
             R.id.action_save -> {
                 val store = StoreEntity(
                     name = mBinding.etName.text.toString().trim(),
-                    phone = mBinding.edPhone.text.toString().trim(),
+                    phone = mBinding.etPhone.text.toString().trim(),
                     website = mBinding.etWebsite.text.toString().trim(),
                     photoUrl = mBinding.etPhotoUrl.text.toString().trim())
 
@@ -114,5 +127,18 @@ class EditStoreFragment : Fragment() {
         super.onDestroy()
     }
 
+    private fun setUiStore(storeEntity: StoreEntity) {
+        with(mBinding){
+            etName.text = storeEntity.name.editable()
+            etPhone.text = storeEntity.phone.editable()
+            etWebsite.text = storeEntity.website.editable()
+            etPhotoUrl.text = storeEntity.photoUrl.editable()
+        }
+    }
+
+    private fun String.editable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
 
 }
+
+
