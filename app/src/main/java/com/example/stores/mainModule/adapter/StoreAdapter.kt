@@ -1,4 +1,4 @@
-package com.example.stores
+package com.example.stores.mainModule.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.stores.R
+import com.example.stores.common.entities.StoreEntity
 import com.example.stores.databinding.ItemStoreBinding
 
 class StoreAdapter(private var stores: MutableList<StoreEntity>, private var listener: OnClickListener):
@@ -71,8 +73,8 @@ class StoreAdapter(private var stores: MutableList<StoreEntity>, private var lis
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setStores(stores: MutableList<StoreEntity>) {
-        this.stores = stores
+    fun setStores(stores: List<StoreEntity>) {
+        this.stores = stores as MutableList<StoreEntity>
         notifyDataSetChanged()
     }
 

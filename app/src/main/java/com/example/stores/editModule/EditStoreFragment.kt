@@ -1,19 +1,20 @@
-package com.example.stores
+package com.example.stores.editModule
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.inputmethodservice.InputMethodService
 import android.os.Bundle
 import android.text.Editable
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.stores.R
+import com.example.stores.StoreApplication
+import com.example.stores.common.entities.StoreEntity
 import com.example.stores.databinding.FragmentEditStoreBinding
+import com.example.stores.mainModule.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import org.jetbrains.anko.doAsync
@@ -123,7 +124,7 @@ class EditStoreFragment : Fragment() {
                     }
 
                     doAsync {
-                        if(mIsEditMode)StoreApplication.database.storeDao().updateStore(mStoreEntity!!)
+                        if(mIsEditMode) StoreApplication.database.storeDao().updateStore(mStoreEntity!!)
                         else StoreApplication.database.storeDao().addStore(mStoreEntity!!)
 
                         uiThread {
