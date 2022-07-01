@@ -5,4 +5,5 @@
     <integer name="liner_url_website">2</integer>
     <integer name="liner_url_photo">4</integer>
     <integer name="lines_max_photo">8</integer>
+    <integer name="main_column">2</integer>
 </resources>

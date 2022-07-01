@@ -1,9 +1,14 @@
 package com.example.stores
 
+import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.stores.databinding.ActivityMainBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
@@ -43,7 +48,7 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
 
     private fun setupRecyclerView() {
         mAdapter = StoreAdapter(mutableListOf(),this)
-        mGridLayout = GridLayoutManager(this,2)
+        mGridLayout = GridLayoutManager(this,resources.getInteger(R.integer.main_column))
         getStores()
 
         mBinding.recyclerView.apply {
@@ -76,18 +81,67 @@ class MainActivity : AppCompatActivity(), OnClickListener, MainAux {
         doAsync {
             StoreApplication.database.storeDao().updateStore(storeEntity)
             uiThread {
-                mAdapter.update(storeEntity)
+                updateStore(storeEntity)
             }
         }
     }
 
     override fun onDeleteStore(storeEntity: StoreEntity) {
-        doAsync {
-            StoreApplication.database.storeDao().deleteStore(storeEntity)
-            uiThread {
-                mAdapter.delete(storeEntity)
+       val items = resources.getStringArray(R.array.array_option_items)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.dialogTitle)
+            .setItems(items) { dialogInterface, i ->
+                when (i) {
+                    0 -> confirmDelete(storeEntity)
+                    1 -> dial(storeEntity.phone)
+                    2 -> goWebsite(storeEntity.website)
+                    else -> Toast.makeText(this, "Nothing", Toast.LENGTH_SHORT).show()
+                }
+            }.show()
+    }
+
+    private fun confirmDelete(storeEntity: StoreEntity){
+        MaterialAlertDialogBuilder(this)
+            .setTitle(resources.getString(R.string.delete_store))
+            .setNegativeButton(resources.getString(R.string.decline), null)
+            .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+                doAsync {
+                    StoreApplication.database.storeDao().deleteStore(storeEntity)
+                    uiThread {
+                        mAdapter.delete(storeEntity)
+                    }
+                }
             }
+            .show()
+    }
+
+    private fun dial(phone: String){
+        val callIntent = Intent().apply {
+            action = Intent.ACTION_DIAL
+            data = Uri.parse("tel:$phone")
         }
+        startIntent(callIntent)
+
+    }
+
+    private fun goWebsite(website : String){
+        if(website.isEmpty()){
+            Toast.makeText(this,"This url doesnt exits",Toast.LENGTH_SHORT).show()
+        }else{
+            val websiteIntent = Intent().apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(website)
+            }
+            startIntent(websiteIntent)
+        }
+    }
+
+    private fun startIntent(intent: Intent){
+        if(intent.resolveActivity(packageManager) != null)
+            startActivity(intent)
+        else
+            Toast.makeText(this,"Error in call",Toast.LENGTH_SHORT).show()
     }
 
     //MainAux

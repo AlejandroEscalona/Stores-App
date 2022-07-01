@@ -45,26 +45,40 @@ class EditStoreFragment : Fragment() {
             mStoreEntity = StoreEntity(name = "", phone = "", photoUrl = "")
         }
 
+        setupActionBar()
+
+        setupTextFields()
+    }
+
+    private fun setupActionBar() {
         mActivity = activity as? MainActivity
 
         mActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         mActivity?.supportActionBar?.title = if (mIsEditMode) getString(R.string.edit_update_store_title_fragment)
-                                                else  getString(R.string.edit_store_title_fragment)
+        else  getString(R.string.edit_store_title_fragment)
 
         setHasOptionsMenu(true)
+    }
 
-        mBinding.etPhotoUrl.addTextChangedListener {
-            Glide.with(this)
-                .load(mBinding.etPhotoUrl.text.toString())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .into(mBinding.imgPhoto)
+    private fun setupTextFields() {
+
+        with(mBinding){
+           etName.addTextChangedListener { validateFields(tilName) }
+           etWebsite.addTextChangedListener { validateFields(tilWebsite) }
+           etPhone.addTextChangedListener {
+                validateFields(tilPhone)
+                loadImage(it.toString().trim())
+            }
         }
+    }
 
-        mBinding.etName.addTextChangedListener { validateFields(mBinding.tilName) }
-        mBinding.etWebsite.addTextChangedListener { validateFields(mBinding.tilWebsite) }
-        mBinding.etPhone.addTextChangedListener { validateFields(mBinding.tilPhone) }
+    private fun loadImage(url: String){
+        Glide.with(this)
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .into(mBinding.imgPhoto)
     }
 
     private fun getStore(id: Long) {

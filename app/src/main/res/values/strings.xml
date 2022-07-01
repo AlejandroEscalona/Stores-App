@@ -15,4 +15,8 @@
     <string name="id">key_id</string>
     <string name="edit_update_title_fragment">Store updated</string>
     <string name="edit_update_store_title_fragment">Update Store</string>
+    <string name="accept">Delete</string>
+    <string name="decline">Cancel</string>
+    <string name="delete_store">Do you want to delete store?</string>
+    <string name="dialogTitle">What would you like to do?</string>
 </resources>
