@@ -13,4 +13,5 @@
     <string name="menu_save">Save</string>
     <string name="store_added_succes">Store added successfully</string>
     <string name="id">key_id</string>
+    <string name="edit_update_title_fragment">Store updated</string>
 </resources>
