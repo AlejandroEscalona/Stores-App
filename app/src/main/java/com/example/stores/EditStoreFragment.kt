@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.stores.databinding.FragmentEditStoreBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
@@ -47,7 +48,9 @@ class EditStoreFragment : Fragment() {
         mActivity = activity as? MainActivity
 
         mActivity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        mActivity?.supportActionBar?.title = getString(R.string.edit_store_title_fragment)
+
+        mActivity?.supportActionBar?.title = if (mIsEditMode) getString(R.string.edit_update_store_title_fragment)
+                                                else  getString(R.string.edit_store_title_fragment)
 
         setHasOptionsMenu(true)
 
@@ -58,6 +61,10 @@ class EditStoreFragment : Fragment() {
                 .centerCrop()
                 .into(mBinding.imgPhoto)
         }
+
+        mBinding.etName.addTextChangedListener { validateFields(mBinding.tilName) }
+        mBinding.etWebsite.addTextChangedListener { validateFields(mBinding.tilWebsite) }
+        mBinding.etPhone.addTextChangedListener { validateFields(mBinding.tilPhone) }
     }
 
     private fun getStore(id: Long) {
@@ -92,35 +99,36 @@ class EditStoreFragment : Fragment() {
             }
             R.id.action_save -> {
 
-                if(mStoreEntity != null){
+                if(mStoreEntity != null &&
+                    validateFields(mBinding.tilPhotoUrl, mBinding.tilPhone, mBinding.tilName)){
                     with(mStoreEntity!!){
                         name = mBinding.etName.text.toString().trim()
                         phone = mBinding.etPhone.text.toString().trim()
                         website = mBinding.etWebsite.text.toString().trim()
                         photoUrl = mBinding.etPhotoUrl.text.toString().trim()
                     }
-                }
 
-                doAsync {
-                    if(mIsEditMode)StoreApplication.database.storeDao().updateStore(mStoreEntity!!)
-                    else StoreApplication.database.storeDao().addStore(mStoreEntity!!)
+                    doAsync {
+                        if(mIsEditMode)StoreApplication.database.storeDao().updateStore(mStoreEntity!!)
+                        else StoreApplication.database.storeDao().addStore(mStoreEntity!!)
 
-                    uiThread {
-                        hideKeyboard()
+                        uiThread {
+                            hideKeyboard()
 
-                        if(mIsEditMode){
-                            mActivity?.updateStore(mStoreEntity!!)
+                            if(mIsEditMode){
+                                mActivity?.updateStore(mStoreEntity!!)
 
-                            Snackbar.make(mBinding.root,
-                                R.string.edit_update_title_fragment,
-                                Snackbar.LENGTH_SHORT)
-                                .show()
-                        }else{
-                            mActivity?.addStore(mStoreEntity!!)
-                            Toast.makeText(mActivity, R.string.edit_store_title_fragment,
-                                Toast.LENGTH_SHORT).show()
+                                Snackbar.make(mBinding.root,
+                                    R.string.edit_update_title_fragment,
+                                    Snackbar.LENGTH_SHORT)
+                                    .show()
+                            }else{
+                                mActivity?.addStore(mStoreEntity!!)
+                                Toast.makeText(mActivity, R.string.edit_store_title_fragment,
+                                    Toast.LENGTH_SHORT).show()
 
-                            mActivity?.onBackPressed()
+                                mActivity?.onBackPressed()
+                            }
                         }
                     }
                 }
@@ -130,6 +138,45 @@ class EditStoreFragment : Fragment() {
                 return super.onOptionsItemSelected(item)
             }
         }
+    }
+
+
+    private fun validateFields(vararg textFields: TextInputLayout) : Boolean{
+        var isValid = true
+
+        for (textField in textFields){
+            if(textField.editText?.text.toString().trim().isEmpty()){
+                textField.error = getString(R.string.required)
+                textField.requestFocus()
+                isValid = false
+            }else textField.error = null
+        }
+
+        return isValid
+    }
+
+    private fun validateFields(): Boolean {
+        var isValid = true
+
+        if(mBinding.etPhotoUrl.text.toString().trim().isEmpty()){
+            mBinding.tilPhotoUrl.error = getString(R.string.required)
+            mBinding.etPhotoUrl.requestFocus()
+            isValid = false
+        }
+
+        if(mBinding.etPhone.text.toString().trim().isEmpty()){
+            mBinding.tilPhone.error = getString(R.string.required)
+            mBinding.etPhone.requestFocus()
+            isValid = false
+        }
+
+        if(mBinding.etName.text.toString().trim().isEmpty()){
+            mBinding.tilName.error = getString(R.string.required)
+            mBinding.etName.requestFocus()
+            isValid = false
+        }
+
+        return isValid
     }
 
     override fun onDestroy() {
