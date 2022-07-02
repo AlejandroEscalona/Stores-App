@@ -24,7 +24,7 @@ class StoreAdapter(private var stores: MutableList<StoreEntity>, private var lis
 
             with(binding.root){
                 setOnClickListener {
-                    listener.onClick(storeEntity.id)
+                    listener.onClick(storeEntity)
                 }
                 setOnLongClickListener {
                     listener.onDeleteStore(storeEntity)
@@ -66,9 +66,14 @@ class StoreAdapter(private var stores: MutableList<StoreEntity>, private var lis
 
     @SuppressLint("NotifyDataSetChanged")
     fun add(storeEntity: StoreEntity) {
-        if(!stores.contains(storeEntity)){
-            stores.add(storeEntity)
-            notifyItemInserted(stores.size-1)
+        if(storeEntity.id != 0L){
+            if(!stores.contains(storeEntity)){
+                stores.add(storeEntity)
+                notifyItemInserted(stores.size-1)
+            }else{
+                update(storeEntity)
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -78,21 +83,11 @@ class StoreAdapter(private var stores: MutableList<StoreEntity>, private var lis
         notifyDataSetChanged()
     }
 
-    fun update(storeEntity: StoreEntity) {
+    private fun update(storeEntity: StoreEntity) {
         val index = stores.indexOf(storeEntity)
         if(index != -1){
             stores.set(index, storeEntity)
             notifyItemChanged(index)
         }
     }
-
-    fun delete(storeEntity: StoreEntity) {
-        val index = stores.indexOf(storeEntity)
-        if(index != -1){
-            stores.removeAt(index)
-            notifyItemRemoved(index)
-        }
-    }
-
-
 }
