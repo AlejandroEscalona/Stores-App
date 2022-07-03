@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private fun setupRecyclerView() {
         mAdapter = StoreAdapter(mutableListOf(),this)
         mGridLayout = GridLayoutManager(this,resources.getInteger(R.integer.main_column))
-        //getStores()
 
         mBinding.recyclerView.apply {
             setHasFixedSize(true)
@@ -87,16 +86,6 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             adapter = mAdapter
         }
     }
-
-//    private fun getStores(){
-//        doAsync {
-//            val stores = StoreApplication.database.storeDao().getAllStores()
-//            uiThread {
-//                mAdapter.setStores(stores)
-//            }
-//        }
-//    }
-
 
     //    OnClickListener Interface
     override fun onClick(storeEntity: StoreEntity) {

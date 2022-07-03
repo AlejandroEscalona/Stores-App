@@ -31,7 +31,7 @@ class EditViewModel : ViewModel(){
         result.value = value
     }
 
-    fun getResult(): Any = result
+    fun getResult(): LiveData<Any> = result
 
     fun saveStore(storeEntity: StoreEntity){
         interactor.saveStore(storeEntity) { newId ->
