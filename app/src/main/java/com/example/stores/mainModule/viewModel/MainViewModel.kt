@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.stores.StoreApplication
 import com.example.stores.common.entities.StoreEntity
+import com.example.stores.common.utils.Constants
 import com.example.stores.mainModule.model.MainInteractor
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -18,20 +19,26 @@ class MainViewModel : ViewModel() {
         interactor = MainInteractor()
     }
 
-    private val stores : MutableLiveData<List<StoreEntity>> by lazy {
-        MutableLiveData<List<StoreEntity>>().also {
+    private val showProgressBar: MutableLiveData<Boolean> = MutableLiveData()
+
+    private val stores : MutableLiveData<MutableList<StoreEntity>> by lazy {
+        MutableLiveData<MutableList<StoreEntity>>().also {
             loadStores()
         }
     }
 
-    fun getStores(): LiveData<List<StoreEntity>>{
+    fun getStores(): LiveData<MutableList<StoreEntity>>{
         return stores
     }
 
+    fun isShowProgress(): LiveData<Boolean> = showProgressBar
+
     private fun loadStores(){
+        showProgressBar.value = Constants.SHOW
         interactor.getStores {
             stores.value = it
             storeList = it
+            showProgressBar.value = Constants.HIDE
         }
     }
 

@@ -17,27 +17,30 @@ class MainInteractor {
 
     fun getStores(callback: (MutableList<StoreEntity>) -> Unit){
         val url = Constants.STORES_URL + Constants.GET_ALL_PATH
-
+        var storeList = mutableListOf<StoreEntity>()
         //Method, url, request, callback response, error response
         val jsonObject = JsonObjectRequest(Request.Method.GET, url, null, { response ->
-            val status = response.getInt(Constants.STATUS_PROPERTY)
+            val status = response.optInt(Constants.STATUS_PROPERTY, Constants.ERROR)
 
             if(status == Constants.SUCCESS){
-                val jsonObject = Gson().fromJson(
-                    response.getJSONArray(Constants.STORES_PROPERTY).get(0).toString()
-                    ,StoreEntity::class.java)
-
                 //get stores from response
-                val jsonList = response.getJSONArray(Constants.STORES_PROPERTY).toString()
-                //Set type on TypeToken
-                val mutableListType = object : TypeToken<MutableList<StoreEntity>>(){}.type
-                //set type with date from response
-                val storeList = Gson().fromJson<MutableList<StoreEntity>>(jsonList, mutableListType)
+                val jsonList = response.optJSONArray(Constants.STORES_PROPERTY)?.toString()
+                if (jsonList != null){
+                    //Set type on TypeToken
+                    val mutableListType = object : TypeToken<MutableList<StoreEntity>>(){}.type
+                    //set type with date from response
+                     storeList = Gson().fromJson(jsonList, mutableListType)
 
-                callback(storeList)
+                    callback(storeList)
+                    return@JsonObjectRequest
+                }
             }
+            callback(storeList)
+
         },{
             it.printStackTrace()
+            callback(storeList)
+
         })
 
         StoreApplication.storeAPI.addToRequestQueue(jsonObject)

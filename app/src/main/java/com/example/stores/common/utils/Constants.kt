@@ -9,4 +9,7 @@ object Constants {
 
     const val SUCCESS = 1
     const val ERROR = 2
+
+    const val SHOW = true
+    const val HIDE = false
 }
